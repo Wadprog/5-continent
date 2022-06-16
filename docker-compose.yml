@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  # web:
+  #   container_name: continent_web
+  #   build:
+  #     context: ./client
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./client:/app
+  api:
+    container_name: continent_api
+    image: continent_api:0.0.1
+    build:
+      context: ./server
+    ports:
+      - '4000:4000'
+    volumes:
+      - ./server:/app
+    environment:
+      - PORT=4000
+      - PGDATABASE=continent_app
+      - PGUSER=continent
+      - PGPASSWORD=123456
+      - PGHOST=tmp_pg_db
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - tmp_pg_db
+
+  tmp_pg_db:
+    container_name: tmp_pg_db
+    image: 'postgres:12'
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=continent
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=social_media
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - tmp_pg:/var/lib/postgresql/data
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - 1433:1433
+    volumes:
+      - ~/apps/mssql/data:/var/lib/mssqlql/data
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=mssql1Ipw
+volumes:
+  tmp_pg: {}
